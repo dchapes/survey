@@ -6,7 +6,6 @@ import (
 
 	"github.com/AlecAivazis/survey/v2/core"
 	expect "github.com/Netflix/go-expect"
-	"github.com/stretchr/testify/assert"
 )
 
 func init() {
@@ -15,7 +14,6 @@ func init() {
 }
 
 func TestPasswordRender(t *testing.T) {
-
 	tests := []struct {
 		title    string
 		prompt   Password
@@ -52,8 +50,13 @@ func TestPasswordRender(t *testing.T) {
 			PasswordQuestionTemplate,
 			&test.data,
 		)
-		assert.Nil(t, err, test.title)
-		assert.Equal(t, test.expected, actual, test.title)
+		if err != nil {
+			t.Errorf("%s failed:\n\t%v", test.title, err)
+			continue
+		}
+		if actual != test.expected {
+			t.Errorf("%s:\n\tgave %q\n\twant %q", test.title, actual, test.expected)
+		}
 	}
 }
 

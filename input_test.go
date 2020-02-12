@@ -1,16 +1,15 @@
 package survey
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/AlecAivazis/survey/v2/core"
 	"github.com/AlecAivazis/survey/v2/terminal"
 	expect "github.com/Netflix/go-expect"
-	"github.com/stretchr/testify/assert"
 )
 
 func init() {
@@ -70,9 +69,13 @@ func TestInputRender(t *testing.T) {
 		},
 	}
 
+	var sb strings.Builder
 	for _, test := range tests {
+		sb.Reset()
 		r, w, err := os.Pipe()
-		assert.Nil(t, err, test.title)
+		if err != nil {
+			t.Fatal("os.Pipe:", err)
+		}
 
 		test.prompt.WithStdio(terminal.Stdio{Out: w})
 		test.data.Input = test.prompt
@@ -84,13 +87,21 @@ func TestInputRender(t *testing.T) {
 			InputQuestionTemplate,
 			test.data,
 		)
-		assert.Nil(t, err, test.title)
+		if err != nil {
+			t.Errorf("%s test.prompt.Render() failed:\n\t%v", test.title, err)
+			//continue
+		}
 
-		w.Close()
-		var buf bytes.Buffer
-		io.Copy(&buf, r)
+		if err := w.Close(); err != nil {
+			t.Fatal("os.Pipe w.Close():", err)
+		}
+		if _, err := io.Copy(&sb, r); err != nil {
+			t.Fatal("io.Copy():", err)
+		}
 
-		assert.Contains(t, buf.String(), test.expected, test.title)
+		if g, w := sb.String(), test.expected; !strings.Contains(g, w) {
+			t.Errorf("%s\ngave %q\n\twanted to contain %q", test.title, g, w)
+		}
 	}
 }
 

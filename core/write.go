@@ -32,6 +32,11 @@ func OptionAnswerList(incoming []string) []OptionAnswer {
 	return list
 }
 
+var (
+	errNeedPointer = errors.New("you must pass a pointer as the target of a Write operation")
+	errMapType     = errors.New("answer maps must be of type map[string]interface")
+)
+
 func WriteAnswer(t interface{}, name string, v interface{}) (err error) {
 	// if the field is a custom type
 	if s, ok := t.(Settable); ok {
@@ -46,7 +51,7 @@ func WriteAnswer(t interface{}, name string, v interface{}) (err error) {
 
 	// make sure we are writing to a pointer
 	if target.Kind() != reflect.Ptr {
-		return errors.New("you must pass a pointer as the target of a Write operation")
+		return errNeedPointer
 	}
 	// the object "inside" of the target pointer
 	elem := target.Elem()
@@ -87,7 +92,7 @@ func WriteAnswer(t interface{}, name string, v interface{}) (err error) {
 	case reflect.Map:
 		mapType := reflect.TypeOf(t).Elem()
 		if mapType.Key().Kind() != reflect.String || mapType.Elem().Kind() != reflect.Interface {
-			return errors.New("answer maps must be of type map[string]interface")
+			return errMapType
 		}
 		mt := *t.(*map[string]interface{})
 		mt[name] = value.Interface()
@@ -97,15 +102,15 @@ func WriteAnswer(t interface{}, name string, v interface{}) (err error) {
 	return copy(elem, value)
 }
 
-type errFieldNotMatch struct {
+type fieldNotMatchError struct {
 	questionName string
 }
 
-func (err errFieldNotMatch) Error() string {
-	return fmt.Sprintf("could not find field matching %v", err.questionName)
+func (err fieldNotMatchError) Error() string {
+	return "could not find field matching " + err.questionName
 }
 
-func (err errFieldNotMatch) Is(target error) bool { // implements the dynamic errors.Is interface.
+func (err fieldNotMatchError) Is(target error) bool { // implements the dynamic errors.Is interface.
 	if target != nil {
 		if name, ok := IsFieldNotMatch(target); ok {
 			// if have a filled questionName then perform "deeper" comparison.
@@ -128,7 +133,7 @@ func (err errFieldNotMatch) Is(target error) bool { // implements the dynamic er
 // }
 func IsFieldNotMatch(err error) (string, bool) {
 	if err != nil {
-		if v, ok := err.(errFieldNotMatch); ok {
+		if v, ok := err.(fieldNotMatchError); ok {
 			return v.questionName, true
 		}
 	}
@@ -168,7 +173,7 @@ func findFieldIndex(s reflect.Value, name string) (int, error) {
 	}
 
 	// we didn't find the field
-	return -1, errFieldNotMatch{name}
+	return -1, fieldNotMatchError{name}
 }
 
 // isList returns true if the element is something we can Len()
