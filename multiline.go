@@ -50,7 +50,10 @@ func (i *Multiline) Prompt(config *PromptConfig) (interface{}, error) {
 
 	// start reading runes from the standard in
 	rr := i.NewRuneReader()
-	rr.SetTermMode()
+	err = rr.SetTermMode()
+	if err != nil {
+		return "", err
+	}
 	defer rr.RestoreTermMode()
 
 	cursor := i.NewCursor()

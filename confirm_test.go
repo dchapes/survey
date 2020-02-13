@@ -47,7 +47,7 @@ func TestConfirmRender(t *testing.T) {
 			"Test Confirm with help but help message is hidden",
 			Confirm{Message: "Is pizza your favorite food?", Help: "This is helpful"},
 			ConfirmTemplateData{},
-			fmt.Sprintf("%s Is pizza your favorite food? [%s for help] (y/N) ", defaultIcons().Question.Text, string(defaultPromptConfig().HelpInput)),
+			fmt.Sprintf("%s Is pizza your favorite food? [%s for help] (y/N) ", defaultIcons().Question.Text, defaultPromptConfig().HelpInput),
 		},
 		{
 			"Test Confirm help output with help message shown",
@@ -143,7 +143,7 @@ func TestConfirmPrompt(t *testing.T) {
 				c.ExpectString(
 					fmt.Sprintf(
 						"Is pizza your favorite food? [%s for help] (y/N)",
-						string(defaultPromptConfig().HelpInput),
+						defaultPromptConfig().HelpInput,
 					),
 				)
 				c.SendLine("?")

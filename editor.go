@@ -101,7 +101,10 @@ func (e *Editor) prompt(initialValue string, config *PromptConfig) (interface{},
 
 	// start reading runes from the standard in
 	rr := e.NewRuneReader()
-	rr.SetTermMode()
+	err = rr.SetTermMode()
+	if err != nil {
+		return "", err
+	}
 	defer rr.RestoreTermMode()
 
 	cursor := e.NewCursor()
@@ -149,12 +152,12 @@ func (e *Editor) prompt(initialValue string, config *PromptConfig) (interface{},
 	}
 	defer os.Remove(f.Name())
 
-	// write utf8 BOM header
+	// Write UTF8 BOM header.
 	// The reason why we do this is because notepad.exe on Windows determines the
 	// encoding of an "empty" text file by the locale, for example, GBK in China,
-	// while golang string only handles utf8 well. However, a text file with utf8
+	// while Go string only handles UTF8 well. However, a text file with UTF8
 	// BOM header is not considered "empty" on Windows, and the encoding will then
-	// be determined utf8 by notepad.exe, instead of GBK or other encodings.
+	// be determined UTF8 by notepad.exe, instead of GBK or other encodings.
 	if _, err := f.Write(bom); err != nil {
 		return "", err
 	}

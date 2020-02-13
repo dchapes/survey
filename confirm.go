@@ -49,7 +49,10 @@ func yesNo(t bool) string {
 func (c *Confirm) getBool(showHelp bool, config *PromptConfig) (bool, error) {
 	cursor := c.NewCursor()
 	rr := c.NewRuneReader()
-	rr.SetTermMode()
+	err := rr.SetTermMode()
+	if err != nil {
+		return false, err
+	}
 	defer rr.RestoreTermMode()
 
 	// start waiting for input

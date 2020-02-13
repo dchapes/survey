@@ -47,13 +47,13 @@ func TestMultilineRender(t *testing.T) {
 			"Test Multiline question output without default but with help hidden",
 			Multiline{Message: "What is your favorite month:", Help: "This is helpful"},
 			MultilineTemplateData{},
-			fmt.Sprintf("%s What is your favorite month: [Enter 2 empty lines to finish]", string(defaultPromptConfig().HelpInput)),
+			fmt.Sprintf("%s What is your favorite month: [Enter 2 empty lines to finish]", defaultPromptConfig().HelpInput),
 		},
 		{
 			"Test Multiline question output with default and with help hidden",
 			Multiline{Message: "What is your favorite month:", Default: "April", Help: "This is helpful"},
 			MultilineTemplateData{},
-			fmt.Sprintf("%s What is your favorite month: (April) [Enter 2 empty lines to finish]", string(defaultPromptConfig().HelpInput)),
+			fmt.Sprintf("%s What is your favorite month: (April) [Enter 2 empty lines to finish]", defaultPromptConfig().HelpInput),
 		},
 		{
 			"Test Multiline question output without default but with help shown",
