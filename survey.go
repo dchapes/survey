@@ -282,14 +282,18 @@ func Ask(qs []*Question, response interface{}, opts ...AskOpt) error {
 		}
 
 		// build up a list of validators that we have to apply to this question
-		validators := make([]Validator, 0, len(options.Validators)+1)
+		var validators []Validator
 
-		// make sure to include the question specific one
-		if q.Validate != nil {
-			validators = append(validators, q.Validate)
+		if q.Validate == nil {
+			// we just need the "global validators
+			validators = options.Validators
+		} else {
+			// make sure to include the question specific one
+			// before any "global" validators
+			validators = make([]Validator, 1, len(options.Validators)+1)
+			validators[0] = q.Validate
+			validators = append(validators, options.Validators...)
 		}
-		// add any "global" validators
-		validators = append(validators, options.Validators...)
 
 		// apply every validator to thte response
 		for _, validator := range validators {
