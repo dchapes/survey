@@ -2,7 +2,6 @@ package core
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -25,7 +24,7 @@ type OptionAnswer struct {
 }
 
 func OptionAnswerList(incoming []string) []OptionAnswer {
-	list := []OptionAnswer{}
+	list := make([]OptionAnswer, 0, len(incoming))
 	for i, opt := range incoming {
 		list = append(list, OptionAnswer{Value: opt, Index: i})
 	}
@@ -37,7 +36,7 @@ var (
 	errMapType     = errors.New("answer maps must be of type map[string]interface")
 )
 
-func WriteAnswer(t interface{}, name string, v interface{}) (err error) {
+func WriteAnswer(t interface{}, name string, v interface{}) error {
 	// if the field is a custom type
 	if s, ok := t.(Settable); ok {
 		// use the interface method
@@ -272,7 +271,7 @@ func copy(t reflect.Value, v reflect.Value) (err error) {
 		case reflect.Float64:
 			castVal, casterr = strconv.ParseFloat(vString, 64)
 		default:
-			return fmt.Errorf("Unable to convert from string to type %s", t.Kind())
+			return errors.New("unable to convert from string to type " + t.Kind().String())
 		}
 
 		if casterr != nil {
@@ -306,7 +305,7 @@ func copy(t reflect.Value, v reflect.Value) (err error) {
 		}
 
 		// we're copying an option answer to an incorrect type
-		return fmt.Errorf("Unable to convert from OptionAnswer to type %s", t.Kind())
+		return errors.New("unable to convert from OptionAnswer to type " + t.Kind().String())
 	}
 
 	// if we are copying from one slice or array to another

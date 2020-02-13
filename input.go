@@ -56,7 +56,7 @@ func (i *Input) Prompt(config *PromptConfig) (interface{}, error) {
 
 	cursor := i.NewCursor()
 
-	line := []rune{}
+	var line []rune
 	// get the next line
 	for {
 		line, err = rr.ReadLine(0)
@@ -84,7 +84,7 @@ func (i *Input) Prompt(config *PromptConfig) (interface{}, error) {
 	}
 
 	// if the line is empty
-	if line == nil || len(line) == 0 {
+	if len(line) == 0 {
 		// use the default value
 		return i.Default, err
 	}

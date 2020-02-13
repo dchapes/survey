@@ -363,7 +363,7 @@ func TestMultiSelectPrompt(t *testing.T) {
 				c.SendLine("")
 				c.ExpectEOF()
 			},
-			[]core.OptionAnswer{},
+			[]core.OptionAnswer(nil), //[]core.OptionAnswer{},
 		},
 	}
 

@@ -169,7 +169,7 @@ func (s *Select) OnChange(key rune, config *PromptConfig) bool {
 
 func (s *Select) filterOptions(config *PromptConfig) []core.OptionAnswer {
 	// the filtered list
-	answers := []core.OptionAnswer{}
+	var answers []core.OptionAnswer
 
 	// if there is no filter applied
 	if s.filter == "" {

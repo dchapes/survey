@@ -158,7 +158,7 @@ func (m *MultiSelect) OnChange(key rune, config *PromptConfig) {
 
 func (m *MultiSelect) filterOptions(config *PromptConfig) []core.OptionAnswer {
 	// the filtered list
-	answers := []core.OptionAnswer{}
+	var answers []core.OptionAnswer
 
 	// if there is no filter applied
 	if m.filter == "" {
@@ -272,7 +272,7 @@ func (m *MultiSelect) Prompt(config *PromptConfig) (interface{}, error) {
 	m.filter = ""
 	m.FilterMessage = ""
 
-	answers := []core.OptionAnswer{}
+	var answers []core.OptionAnswer
 	for i, option := range m.Options {
 		if val, ok := m.checked[i]; ok && val {
 			answers = append(answers, core.OptionAnswer{Value: option, Index: i})

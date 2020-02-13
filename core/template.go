@@ -1,7 +1,7 @@
 package core
 
 import (
-	"bytes"
+	"strings"
 	"sync"
 	"text/template"
 
@@ -26,12 +26,12 @@ func RunTemplate(tmpl string, data interface{}) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	buf := bytes.NewBufferString("")
-	err = t.Execute(buf, data)
+	var sb strings.Builder
+	err = t.Execute(&sb, data)
 	if err != nil {
 		return "", err
 	}
-	return buf.String(), err
+	return sb.String(), err
 }
 
 var (

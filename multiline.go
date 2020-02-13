@@ -55,18 +55,18 @@ func (i *Multiline) Prompt(config *PromptConfig) (interface{}, error) {
 
 	cursor := i.NewCursor()
 
-	multiline := make([]string, 0)
+	var multiline []string
 
 	emptyOnce := false
 	// get the next line
 	for {
-		line := []rune{}
+		var line []rune
 		line, err = rr.ReadLine(0)
 		if err != nil {
 			return string(line), err
 		}
 
-		if string(line) == "" {
+		if len(line) == 0 {
 			if emptyOnce {
 				numLines := len(multiline) + 2
 				cursor.PreviousLine(numLines)
